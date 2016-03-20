@@ -125,7 +125,7 @@ public class Miner extends BatchInterruptibleWithinExecutorPool implements Runna
                                         logger.fatal("Unable to serialize miner result", e);
                                         return null;
                                     }
-                                    producer.send(new ProducerRecord<String, String>("raw-html", html.getRefferal().getNormalizeURL(), json));
+                                    producer.send(new ProducerRecord<String, String>("raw-html", html.getReferral().getNormalizeURL(), json));
                                     MinerMain.addMetric("URLs out",1);
 
                                 }

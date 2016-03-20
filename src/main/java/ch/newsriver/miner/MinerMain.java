@@ -1,16 +1,12 @@
 package ch.newsriver.miner;
 
 import ch.newsriver.executable.Main;
-import com.intenthq.gander.Gander;
 
-
-import com.intenthq.gander.PageInfo;
 import org.apache.commons.cli.Options;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import scala.Option;
 import sun.net.www.protocol.http.HttpURLConnection;
 
 import java.net.URI;
@@ -34,15 +30,6 @@ public class MinerMain extends Main {
     public MinerMain(String[] args, Options options ){
         super(args,options);
 
-        /*
-    try {
-        String rawHTML = IOUtils.toString(new URI("file:///Users/eliapalme/Desktop/text.txt"),"utf-8");
-        Option<PageInfo> d = Gander.extract(rawHTML, "it");
-        System.out.print(d.get().cleanedText().get());
-    }catch (Exception e){
-        e.printStackTrace();
-        System.out.print(e.getMessage());
-    }*/
 
     }
 

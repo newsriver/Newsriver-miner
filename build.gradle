@@ -27,6 +27,7 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-annotations:2.7.2'
     compile 'org.apache.kafka:kafka-clients:0.9.0.0'
     compile 'org.jsoup:jsoup:1.8.3'
+    compile 'com.optimaize.languagedetector:language-detector:0.5'
     compile 'rome:rome-fetcher:1.0'
     compile 'com.nanohttpd:nanohttpd:2.2.0'
     compile 'commons-io:commons-io:2.4'
