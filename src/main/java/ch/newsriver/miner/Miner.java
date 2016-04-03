@@ -4,7 +4,9 @@ import ch.newsriver.data.html.HTML;
 import ch.newsriver.data.url.BaseURL;
 import ch.newsriver.data.url.FeedURL;
 import ch.newsriver.executable.BatchInterruptibleWithinExecutorPool;
+import ch.newsriver.miner.cache.ResolvedURLs;
 import ch.newsriver.miner.html.HTMLFetcher;
+import ch.newsriver.miner.url.URLResolver;
 import ch.newsriver.util.http.HttpClientPool;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -20,6 +22,8 @@ import org.apache.logging.log4j.Logger;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -109,14 +113,33 @@ public class Miner extends BatchInterruptibleWithinExecutorPool implements Runna
                             MinerMain.addMetric("URLs in",1);
 
                             supplyAsyncInterruptWithin(() -> {
-                                BaseURL baseURL = null;
+                                BaseURL referral = null;
                                 try {
-                                    baseURL = mapper.readValue(record.value(), BaseURL.class);
+                                    referral = mapper.readValue(record.value(), BaseURL.class);
                                 } catch (IOException e) {
                                     logger.error("Error deserialising BaseURL", e);
                                     return null;
                                 }
-                                HTML html = new HTMLFetcher(baseURL).fetch();
+
+
+
+                                String resolvedURL = ResolvedURLs.getInstance().getResolved(referral.getUlr());
+                                if(resolvedURL==null) {
+                                    try {
+                                        resolvedURL = URLResolver.getInstance().resolveURL(referral.getUlr());
+                                    } catch (URLResolver.InvalidURLException e) {
+                                        logger.error("Unable to resolve URL", e);
+                                        return null;
+                                    }
+                                    ResolvedURLs.getInstance().setResolved(referral.getUlr(),resolvedURL);
+                                }
+
+                                //here lookup to check if the article has already been imported
+                                //Search in elastic search if URL exists if so get the document
+                                //add the referral and pass it to the first filtering queue.
+
+
+                                HTML html = new HTMLFetcher(resolvedURL,referral).fetch();
                                 if(html!=null) {
                                     String json = null;
                                     try {
@@ -125,7 +148,13 @@ public class Miner extends BatchInterruptibleWithinExecutorPool implements Runna
                                         logger.fatal("Unable to serialize miner result", e);
                                         return null;
                                     }
-                                    producer.send(new ProducerRecord<String, String>("raw-html", html.getReferral().getNormalizeURL(), json));
+                                    producer.send(new ProducerRecord<String, String>("raw-html", html.getUrl(), json));
+
+                                    try {
+                                        URI uri = new URI(html.getUrl());
+                                        producer.send(new ProducerRecord<String, String>("site-url", uri.getScheme()+"://"+uri.getHost(), json));
+                                    }catch (URISyntaxException e){}
+
                                     MinerMain.addMetric("URLs out",1);
 
                                 }
