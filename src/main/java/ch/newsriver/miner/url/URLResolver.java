@@ -39,7 +39,7 @@ public class URLResolver {
     static final String DESKTOP_EMULATE_USER_AGENT = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36";
 
     static final Pattern REFRESHMETAREGEX = Pattern.compile("meta.+content=\\\".+url=(.*)\\\".*");
-    static final Pattern GOOGLEREDIRECTSREGEX = Pattern.compile(".+www.google.com/url.+url=(.*)[&.*]?");
+    static final Pattern GOOGLEREDIRECTSREGEX = Pattern.compile(".+www.google.com/url.+url=([^&]*).*?");
 
     static {
         //Google

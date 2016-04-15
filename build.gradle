@@ -1,11 +1,12 @@
 
 apply plugin: 'java'
 apply plugin: 'application'
+apply plugin: 'docker'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-version = '0.1'
+version = '0.1.1'
 
 
 mainClassName = 'ch.newsriver.miner.MinerMain'
@@ -47,5 +48,35 @@ task fatJar(type: Jar) {
     baseName = project.name
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'se.transmode.gradle:gradle-docker:1.2'
+    }
+}
+
+
+docker {
+    registry = 'https://docker-registry.newsriver.io:5000'
+
+}
+
+task buildimage(type: Docker, dependsOn:[clean,fatJar]) {
+    push = true
+    tagVersion = 'latest'
+    registry= 'docker-registry.newsriver.io:5000'
+    applicationName = 'newsriver-miner'
+    dockerfile = project.file('Dockerfile')
+
+    doFirst {
+        copy {
+            from jar
+            into stageDir
+        }
+    }
 }
 
