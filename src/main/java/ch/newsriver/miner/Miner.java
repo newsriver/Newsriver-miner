@@ -5,9 +5,7 @@ import ch.newsriver.data.url.BaseURL;
 import ch.newsriver.executable.Main;
 import ch.newsriver.executable.poolExecution.BatchInterruptibleWithinExecutorPool;
 import ch.newsriver.miner.cache.DownloadedHTMLs;
-import ch.newsriver.miner.cache.ResolvedURLs;
 import ch.newsriver.miner.html.HTMLFetcher;
-import ch.newsriver.miner.url.URLResolver;
 import ch.newsriver.performance.MetricsLogger;
 import ch.newsriver.util.http.HttpClientPool;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -103,23 +101,23 @@ public class Miner extends BatchInterruptibleWithinExecutorPool implements Runna
         this.shutdown();
         consumer.close();
         producer.close();
-        metrics.logMetric("shutdown");
+        metrics.logMetric("shutdown",null);
     }
 
 
     public void run() {
-        metrics.logMetric("start");
+        metrics.logMetric("start",null);
         while (run) {
             try {
                 this.waitFreeBatchExecutors(batchSize);
-                metrics.logMetric("processing batch");
+                //TODO: decide if we want to keep this.
+                //metrics.logMetric("processing batch");
                 ConsumerRecords<String, String> records = consumer.poll(60000);
 
                 for (ConsumerRecord<String, String> record : records) {
-                    metrics.logMetric("processing url");
-                    MinerMain.addMetric("URLs in", 1);
-
                     supplyAsyncInterruptExecutionWithin(() -> {
+
+                        MinerMain.addMetric("URLs in", 1);
                         BaseURL referral = null;
                         try {
                             referral = mapper.readValue(record.value(), BaseURL.class);
@@ -128,23 +126,11 @@ public class Miner extends BatchInterruptibleWithinExecutorPool implements Runna
                             return null;
                         }
 
-                        //TODO:possible optimisation. The resolver is downloading the html to serch for meta redirects
-                        //If the downloaded HTML is the one of the final resolved URL it could be reused and passed to the HTML fetcher.
-
-                        String resolvedURL = ResolvedURLs.getInstance().getResolved(referral.getUlr());
-                        if (resolvedURL == null) {
-                            try {
-                                resolvedURL = URLResolver.getInstance().resolveURL(referral.getUlr());
-                            } catch (URLResolver.InvalidURLException e) {
-                                logger.error("Unable to resolve URL", e);
-                                return null;
-                            }
-                            ResolvedURLs.getInstance().setResolved(referral.getUlr(), resolvedURL);
-                        }
+                        metrics.logMetric("processing url",referral);
 
 
-                        if (!DownloadedHTMLs.getInstance().isDownloaded(resolvedURL)) {
-                            HTML html = new HTMLFetcher(resolvedURL, referral).fetch();
+                        if (!DownloadedHTMLs.getInstance().isDownloaded(referral.getUlr())) {
+                            HTML html = new HTMLFetcher(referral.getUlr(), referral).fetch();
                             if (html != null) {
                                 String json = null;
                                 try {
@@ -154,8 +140,8 @@ public class Miner extends BatchInterruptibleWithinExecutorPool implements Runna
                                     return null;
                                 }
                                 producer.send(new ProducerRecord<String, String>("raw-html", html.getUrl(), json));
-                                DownloadedHTMLs.getInstance().setDownloaded(resolvedURL);
-                                metrics.logMetric("submitted html");
+                                DownloadedHTMLs.getInstance().setDownloaded(referral.getUlr());
+                                metrics.logMetric("submitted html", referral);
                                 MinerMain.addMetric("URLs out", 1);
 
                             }
@@ -163,7 +149,7 @@ public class Miner extends BatchInterruptibleWithinExecutorPool implements Runna
                             HTML html = new HTML();
                             html.setAlreadyFetched(true);
                             html.setReferral(referral);
-                            html.setUrl(resolvedURL);
+                            html.setUrl(referral.getUlr());
                             String json = null;
                             try {
                                 json = mapper.writeValueAsString(html);
@@ -172,8 +158,7 @@ public class Miner extends BatchInterruptibleWithinExecutorPool implements Runna
                                 return null;
                             }
                             producer.send(new ProducerRecord<String, String>("raw-html", html.getUrl(), json));
-                            DownloadedHTMLs.getInstance().setDownloaded(resolvedURL);
-                            metrics.logMetric("submitted html");
+                            metrics.logMetric("submitted html update",referral);
                             MinerMain.addMetric("URLs out", 1);
                         }
                         return null;
