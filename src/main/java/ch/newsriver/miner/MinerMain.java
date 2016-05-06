@@ -40,8 +40,8 @@ public class MinerMain extends MainWithPoolExecutorOptions {
 
     public void start(){
         try {
-            System.out.println("Threads pool size:" + this.getPoolSize() +"\tbatch size:"+this.getBatchSize()+"\tqueue size:"+this.getBatchSize());
-            miner = new Miner(this.getPoolSize(),this.getBatchSize(),this.getQueueSize());
+            System.out.println("Threads pool size:" + this.getPoolSize() +"\tbatch size:"+this.getBatchSize()+"\tqueue size:"+this.getBatchSize() +"\tpriority:"+this.isPriority());
+            miner = new Miner(this.getPoolSize(),this.getBatchSize(),this.getQueueSize(),this.isPriority());
             new Thread(miner).start();
         } catch (Exception e) {
             logger.fatal("Unable to initialize scout", e);

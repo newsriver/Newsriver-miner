@@ -32,6 +32,7 @@ public class HTMLFetcher {
 
     private BaseURL referral;
     private String  resolvedURL;
+    private boolean ajaxBased;
     private static  LanguageDetector languageDetector=null;
 
     static {
@@ -46,17 +47,26 @@ public class HTMLFetcher {
     }
 
 
-    public HTMLFetcher(String resolvedURL,BaseURL referral) {
+    public HTMLFetcher(String resolvedURL,BaseURL referral, boolean ajaxBased) {
         this.referral = referral;
         this.resolvedURL = resolvedURL;
+        this.ajaxBased = ajaxBased;
     }
 
 
     public HTML fetch() {
         try {
-            String htmlStr =  HTMLUtils.getHTML(this.resolvedURL, false);
+
+
             HTML html = new HTML();
-            html.setRawHTML(htmlStr);
+            if(ajaxBased){
+                html.setRawHTML(HTMLUtils.getAjaxBasedHTML(this.resolvedURL));
+                html.setAjaxBasedFetching(true);
+            }else{
+                html.setRawHTML(HTMLUtils.getHTML(this.resolvedURL, false));
+                html.setAjaxBasedFetching(false);
+            }
+
             html.setReferral(this.referral);
             html.setUrl(this.resolvedURL);
 
