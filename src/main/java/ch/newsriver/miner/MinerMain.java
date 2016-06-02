@@ -7,6 +7,7 @@ import ch.newsriver.executable.Main;
 import ch.newsriver.executable.StreamExecutor;
 import ch.newsriver.executable.poolExecution.MainWithPoolExecutorOptions;
 import ch.newsriver.processor.Output;
+import ch.newsriver.util.JSONSerde;
 import org.apache.commons.cli.Options;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;

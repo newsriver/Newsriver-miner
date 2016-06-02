@@ -46,8 +46,8 @@ task fatJar(type: Jar) {
                 'Implementation-Version': version,
                 'Main-Class': 'ch.newsriver.miner.MinerMain'
     }
-    exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
-    zip64 true
+    //exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
+    //zip64 true
     baseName = project.name
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
