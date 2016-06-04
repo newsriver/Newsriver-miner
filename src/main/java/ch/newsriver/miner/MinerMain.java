@@ -111,16 +111,17 @@ public class MinerMain extends StreamExecutor implements Thread.UncaughtExceptio
 
             });
 
-            Predicate<String, HTML> isSeedURL = (k, v) -> v.getReferral() instanceof SeedURL;
-            Predicate<String, HTML> isNotSeedURL = (k, v) -> !(v.getReferral() instanceof SeedURL);
+            Predicate<String, HTML> isSeedURL = (k, v) -> v!=null && v.getReferral() instanceof SeedURL;
+            Predicate<String, HTML> isNotSeedURL = (k, v) -> v!=null && !(v.getReferral() instanceof SeedURL);
             KStream<String, HTML>[] next = htmls.branch(isSeedURL, isNotSeedURL);
 
             next[0].to(stringSerde, htmlSerde, "seed-html");
             next[1].to(stringSerde, htmlSerde, "raw-html");
             streams = new KafkaStreams(builder, props);
+
+
+
             streams.setUncaughtExceptionHandler(this);
-
-
             streams.start();
 
 
@@ -168,6 +169,7 @@ public class MinerMain extends StreamExecutor implements Thread.UncaughtExceptio
 
     @Override
     public void uncaughtException(Thread t, Throwable e) {
+
         logger.fatal("Miner uncaughtException", e);
     }
 }

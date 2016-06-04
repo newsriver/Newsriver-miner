@@ -6,7 +6,7 @@ apply plugin: 'docker'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-version = '0.2'
+version = '0.2.1'
 
 
 mainClassName = 'ch.newsriver.miner.MinerMain'
@@ -26,8 +26,8 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-databind:2.7.2'
     compile 'com.fasterxml.jackson.core:jackson-core:2.7.2'
     compile 'com.fasterxml.jackson.core:jackson-annotations:2.7.2'
-    compile 'org.apache.kafka:kafka-clients:0.10.0.0'
-    compile 'org.apache.kafka:kafka-streams:0.10.0.0'
+    compile 'org.apache.kafka:kafka-clients:0.10.0.1'
+    compile 'org.apache.kafka:kafka-streams:0.10.0.1'
     compile 'org.jsoup:jsoup:1.8.3'
     compile 'com.optimaize.languagedetector:language-detector:0.5'
     compile 'rome:rome-fetcher:1.0'
@@ -46,8 +46,8 @@ task fatJar(type: Jar) {
                 'Implementation-Version': version,
                 'Main-Class': 'ch.newsriver.miner.MinerMain'
     }
-    //exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
-    //zip64 true
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
+    zip64 true
     baseName = project.name
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
@@ -69,7 +69,7 @@ docker {
 
 task buildimage(type: Docker, dependsOn:[clean,fatJar]) {
     push = true
-    tagVersion = '0.2'
+    tagVersion = 'latest'
     registry= 'docker-registry.newsriver.io:5000'
     applicationName = 'newsriver-miner'
     dockerfile = project.file('Dockerfile')

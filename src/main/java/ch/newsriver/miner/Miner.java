@@ -80,7 +80,7 @@ public class Miner  implements StreamProcessor<BaseURL, HTML> {
 
 
         HTML output = null;
-
+        MinerMain.addMetric("URLs in", 1);
         metrics.logMetric("processing url", referral);
         boolean isSeed = referral instanceof SeedURL;
         boolean reuiresAjaxCrawling = false;
@@ -106,7 +106,7 @@ public class Miner  implements StreamProcessor<BaseURL, HTML> {
                 output= html;
                 DownloadedHTMLs.getInstance().setDownloaded(referral.getUrl());
                 metrics.logMetric("submitted html", referral);
-                MinerMain.addMetric("URLs out", 1);
+                MinerMain.addMetric("HTMLs out", 1);
 
             }
         } else {
@@ -116,7 +116,7 @@ public class Miner  implements StreamProcessor<BaseURL, HTML> {
             html.setUrl(referral.getUrl());
             output= html;
             metrics.logMetric("submitted html update", referral);
-            MinerMain.addMetric("URLs out", 1);
+            MinerMain.addMetric("HTMLs out", 1);
         }
 
         return new KeyValue(key,output);
