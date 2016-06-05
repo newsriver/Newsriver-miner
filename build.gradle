@@ -6,7 +6,7 @@ apply plugin: 'docker'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-version = '0.1.1'
+version = '0.1.2'
 
 
 mainClassName = 'ch.newsriver.miner.MinerMain'

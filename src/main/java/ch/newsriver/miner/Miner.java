@@ -3,6 +3,7 @@ package ch.newsriver.miner;
 import ch.newsriver.data.html.HTML;
 import ch.newsriver.data.url.BaseURL;
 import ch.newsriver.data.url.ManualURL;
+import ch.newsriver.data.url.SeedURL;
 import ch.newsriver.executable.Main;
 import ch.newsriver.miner.cache.DownloadedHTMLs;
 import ch.newsriver.miner.html.HTMLFetcher;
@@ -96,7 +97,12 @@ public class Miner extends Processor<BaseURL, HTML> implements Runnable {
 
 
         consumer = new KafkaConsumer(props);
-        consumer.subscribe(Arrays.asList("raw-urls"+priorityPostFix));
+        if(isPriority()) {
+            consumer.subscribe(Arrays.asList("raw-urls" + priorityPostFix));
+        }else{
+            consumer.subscribe(Arrays.asList("raw-urls" + priorityPostFix, "seed-urls"));
+        }
+
         producer = new KafkaProducer(props);
 
     }
@@ -147,7 +153,12 @@ public class Miner extends Processor<BaseURL, HTML> implements Runnable {
                                 producer.send(new ProducerRecord<String, String>("processing-status", ((ManualURL) output.getIntput()).getSessionId(), "HTML mining completed."));
                             }
 
-                            producer.send(new ProducerRecord<String, String>("raw-html"+priorityPostFix, output.getOutput().getUrl(), json));
+                            if(output.getIntput() instanceof SeedURL){
+                                producer.send(new ProducerRecord<String, String>("seed-html", output.getOutput().getUrl(), json));
+                            }else{
+                                producer.send(new ProducerRecord<String, String>("raw-html"+priorityPostFix, output.getOutput().getUrl(), json));
+                            }
+
 
 
                         } else {
@@ -193,7 +204,7 @@ public class Miner extends Processor<BaseURL, HTML> implements Runnable {
 
         output.setIntput(referral);
         metrics.logMetric("processing url", referral);
-
+        boolean isSeed = referral instanceof SeedURL;
         boolean reuiresAjaxCrawling = false;
 
         /*TODO: need to be completed we may need to add a Redis layer to the WebSiteFactory
@@ -211,12 +222,12 @@ public class Miner extends Processor<BaseURL, HTML> implements Runnable {
                             }
         */
 
-        if (!DownloadedHTMLs.getInstance().isDownloaded(referral.getUlr())) {
-            HTML html = new HTMLFetcher(referral.getUlr(), referral, reuiresAjaxCrawling).fetch();
+        if (!DownloadedHTMLs.getInstance().isDownloaded(referral.getUrl()) || isSeed) {
+            HTML html = new HTMLFetcher(referral.getUrl(), referral, reuiresAjaxCrawling).fetch();
             if (html != null) {
                 output.setOutput(html);
                 output.setSuccess(true);
-                DownloadedHTMLs.getInstance().setDownloaded(referral.getUlr());
+                DownloadedHTMLs.getInstance().setDownloaded(referral.getUrl());
                 metrics.logMetric("submitted html", referral);
                 MinerMain.addMetric("URLs out", 1);
 
@@ -227,7 +238,7 @@ public class Miner extends Processor<BaseURL, HTML> implements Runnable {
             HTML html = new HTML();
             html.setAlreadyFetched(true);
             html.setReferral(referral);
-            html.setUrl(referral.getUlr());
+            html.setUrl(referral.getUrl());
             output.setOutput(html);
             output.setSuccess(true);
             output.setUpdate(true);
