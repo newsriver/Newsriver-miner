@@ -57,14 +57,15 @@ public class HTMLFetcher {
     public HTML fetch() {
         try {
 
-
-            HTML html = new HTML();
+            HTML html;
             if(ajaxBased){
-                html.setRawHTML(HTMLUtils.getAjaxBasedHTML(this.resolvedURL));
-                html.setAjaxBasedFetching(true);
+                html = HTMLUtils.getAjaxBasedHTML(this.resolvedURL);
             }else{
-                html.setRawHTML(HTMLUtils.getHTML(this.resolvedURL, false));
-                html.setAjaxBasedFetching(false);
+                html = HTMLUtils.getHTML(this.resolvedURL, false);
+            }
+
+            if(html==null){
+                return null;
             }
 
             html.setReferral(this.referral);
@@ -81,9 +82,9 @@ public class HTMLFetcher {
 
             return html;
         } catch (IOException e) {
-            logger.error("Error running HTMLFetcher task", e);
+            logger.error("Error running HTMLFetcher task, url:" + this.resolvedURL , e);
         } catch (Exception e) {
-            logger.error("Error running HTMLFetcher task", e);
+            logger.error("Error running HTMLFetcher task, url:" + this.resolvedURL, e);
         }
         return null;
     }

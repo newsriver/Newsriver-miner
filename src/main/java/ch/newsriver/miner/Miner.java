@@ -69,6 +69,23 @@ public class Miner {
         boolean isSeed = referral instanceof SeedURL;
         boolean reuiresAjaxCrawling = false;
 
+
+        //TODO: replace this with proper solution
+        //Like search for the website in elasticsearch and detecting if ajax is needed.
+        if(referral.getUrl().contains("sonntagszeitung.ch")){
+            reuiresAjaxCrawling=true;
+        }
+        if(referral.getUrl().contains("swissquote.ch")){
+            reuiresAjaxCrawling=true;
+        }
+        if(referral.getUrl().contains("aufeminin.com")){
+            reuiresAjaxCrawling=true;
+        }
+        if(referral.getUrl().contains("boleromagazin.ch")){
+            reuiresAjaxCrawling=true;
+        }
+
+
         /*TODO: need to be completed we may need to add a Redis layer to the WebSiteFactory
                             URI pageURL = null;
                             try {

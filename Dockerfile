@@ -4,7 +4,7 @@
 #RUN apk --update add openjdk8-jre chrome xvfb unzip
 #RUN wget http://chromedriver.storage.googleapis.com/2.9/chromedriver_linux64.zip && unzip chromedriver_linux64.zip
 
-FROM centos:centos7
+FROM centos:centos7.2.1511
 
 #Install Google Chrome, Java 8, Xvfb and unzip
 #---------------------------------------------
@@ -15,8 +15,9 @@ enabled=1\n\
 gpgcheck=1\n\
 gpgkey=https://dl-ssl.google.com/linux/linux_signing_key.pub" > /etc/yum.repos.d/google-chrome.repo
 
-RUN yum install -y java-1.8.0-openjdk.x86_64 google-chrome-stable xorg-x11-server-Xvfb unzip
+RUN yum install -y java-1.8.0-openjdk.x86_64 google-chrome-stable.x86_64 xorg-x11-server-Xvfb unzip wget
 
+RUN wget http://chromedriver.storage.googleapis.com/2.22/chromedriver_linux64.zip && unzip chromedriver_linux64.zip -d /home/
 
 COPY Newsriver-miner-*.jar /home/Newsriver-miner.jar
 

@@ -81,8 +81,8 @@ public class MinerMain extends MainWithPoolExecutorOptions {
 
                     return html;
                 })
-                .to("seed-html", v -> v instanceof SeedURL)
-                .to("raw-html", v -> !(v instanceof SeedURL)).build();
+                .to("seed-html", v -> ((HTML)v).getReferral() instanceof SeedURL)
+                .to("raw-html", v -> !(((HTML)v).getReferral() instanceof SeedURL)).build();
 
         new Thread(stream).start();
 
