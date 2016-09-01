@@ -1,19 +1,19 @@
 import ch.newsriver.data.html.HTML;
-import ch.newsriver.miner.cache.DownloadedHTMLs;
 import ch.newsriver.miner.html.HTMLFetcher;
 import ch.newsriver.util.http.HttpClientPool;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Properties;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by eliapalme on 15/04/16.
  */
+@Ignore("Test is ignored, used for manual testing")
 public class TestFetchHTML {
 
     @Before
@@ -47,8 +47,8 @@ public class TestFetchHTML {
         String url = "http://www.sonntagszeitung.ch/read/sz_19_06_2016/nachrichten/Schweiz-kaempft-gegen-Schlepper-Mafia-67011";
 
 
-            HTML html = new HTMLFetcher(url, null,true).fetch();
-            assertNotNull(html);
+        HTML html = new HTMLFetcher(url, null, true).fetch();
+        assertNotNull(html);
 
     }
 

@@ -2,14 +2,13 @@ import ch.newsriver.util.http.HttpClientPool;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by eliapalme on 15/04/16.
  */
+@Ignore("Test is ignored, used for manual testing")
 public class TestURLResolver {
 
     private static final ObjectMapper mapper = new ObjectMapper();

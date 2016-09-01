@@ -28,12 +28,7 @@ public class HTMLFetcher {
 
 
     private static final Logger logger = LogManager.getLogger(HTMLFetcher.class);
-
-
-    private BaseURL referral;
-    private String  resolvedURL;
-    private boolean ajaxBased;
-    private static  LanguageDetector languageDetector=null;
+    private static LanguageDetector languageDetector = null;
 
     static {
         try {
@@ -41,13 +36,17 @@ public class HTMLFetcher {
             languageDetector = LanguageDetectorBuilder.create(NgramExtractors.standard())
                     .withProfiles(languageProfiles)
                     .build();
-        }catch (IOException ex){
-            logger.fatal("Unable to initialize language detector",ex);
+        } catch (IOException ex) {
+            logger.fatal("Unable to initialize language detector", ex);
         }
     }
 
+    private BaseURL referral;
+    private String resolvedURL;
+    private boolean ajaxBased;
 
-    public HTMLFetcher(String resolvedURL,BaseURL referral, boolean ajaxBased) {
+
+    public HTMLFetcher(String resolvedURL, BaseURL referral, boolean ajaxBased) {
         this.referral = referral;
         this.resolvedURL = resolvedURL;
         this.ajaxBased = ajaxBased;
@@ -58,13 +57,13 @@ public class HTMLFetcher {
         try {
 
             HTML html;
-            if(ajaxBased){
+            if (ajaxBased) {
                 html = HTMLUtils.getAjaxBasedHTML(this.resolvedURL);
-            }else{
+            } else {
                 html = HTMLUtils.getHTML(this.resolvedURL, false);
             }
 
-            if(html==null){
+            if (html == null) {
                 return null;
             }
 
@@ -75,14 +74,14 @@ public class HTMLFetcher {
             TextObjectFactory textObjectFactory = CommonTextObjectFactories.forDetectingOnLargeText();
             TextObject textObject = textObjectFactory.forText(pageText);
             Optional<LdLocale> lang = languageDetector.detect(textObject);
-            if(lang.isPresent()){
+            if (lang.isPresent()) {
                 html.setLanguage(lang.get().getLanguage());
             }
 
 
             return html;
         } catch (IOException e) {
-            logger.error("Error running HTMLFetcher task, url:" + this.resolvedURL , e);
+            logger.error("Error running HTMLFetcher task, url:" + this.resolvedURL, e);
         } catch (Exception e) {
             logger.error("Error running HTMLFetcher task, url:" + this.resolvedURL, e);
         }

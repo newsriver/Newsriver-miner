@@ -19,13 +19,13 @@ RUN yum install -y java-1.8.0-openjdk.x86_64 google-chrome-stable.x86_64 xorg-x1
 
 RUN wget http://chromedriver.storage.googleapis.com/2.22/chromedriver_linux64.zip && unzip chromedriver_linux64.zip -d /home/
 
-COPY Newsriver-miner-*.jar /home/Newsriver-miner.jar
+COPY newsriver-miner-*.jar /home/newsriver-miner.jar
 
 ENV DISPLAY=:10
 
 RUN echo -e "#!/bin/bash\n\
  /usr/bin/Xvfb \$DISPLAY -screen 0 1366x768x24 -ac&\n\
- java -Duser.timezone=GMT -Dfile.encoding=utf-8 -Dwebdriver.chrome.driver=./chromedriver -Duser.timezone=GMT -Dfile.encoding=utf-8 -Xms512m -Xmx1g -Xss1m -XX:MaxMetaspaceSize=512m -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70 -XX:OnOutOfMemoryError=\"kill -9 %p\" -jar /home/Newsriver-miner.jar \"\$@\"" > /home/start.sh
+ java -Duser.timezone=GMT -Dfile.encoding=utf-8 -Dwebdriver.chrome.driver=./chromedriver -Duser.timezone=GMT -Dfile.encoding=utf-8 -Xms512m -Xmx1g -Xss1m -XX:MaxMetaspaceSize=512m -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70 -XX:OnOutOfMemoryError=\"kill -9 %p\" -jar /home/newsriver-miner.jar \"\$@\"" > /home/start.sh
 RUN chmod +x /home/start.sh
 WORKDIR /home
 EXPOSE 31000-32000

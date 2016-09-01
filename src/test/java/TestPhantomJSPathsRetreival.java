@@ -1,5 +1,4 @@
-import ch.newsriver.data.html.HTML;
-import ch.newsriver.miner.html.HTMLFetcher;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -15,11 +14,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.assertNotNull;
-
 /**
  * Created by eliapalme on 20/06/16.
  */
+@Ignore("Test is ignored, used for manual testing")
 public class TestPhantomJSPathsRetreival {
 
 
@@ -37,8 +35,8 @@ public class TestPhantomJSPathsRetreival {
 
             List<WebElement> elementList = driver.findElements(By.tagName("div"));
             Set<String> urls = new HashSet<>();
-            for(WebElement element : elementList){
-                if(!element.isDisplayed() || !element.isEnabled()){
+            for (WebElement element : elementList) {
+                if (!element.isDisplayed() || !element.isEnabled()) {
                     continue;
                 }
                 element.click();
@@ -47,14 +45,12 @@ public class TestPhantomJSPathsRetreival {
                 driver.navigate().back();
             }
 
-            System.out.println("Size:"+urls.size());
+            System.out.println("Size:" + urls.size());
 
 
         } finally {
             driver.quit();
         }
-
-
 
 
     }

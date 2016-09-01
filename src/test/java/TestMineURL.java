@@ -1,27 +1,27 @@
 import ch.newsriver.data.url.LinkURL;
 import ch.newsriver.util.http.HttpClientPool;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Properties;
 
 /**
  * Created by eliapalme on 19/06/16.
  */
+@Ignore("Test is ignored, used for manual testing")
 public class TestMineURL {
 
     private static final ObjectMapper mapper = new ObjectMapper();
     private static final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-    KafkaProducer    producer;
+    KafkaProducer producer;
 
     @Before
     public void initialize() throws Exception {
@@ -59,18 +59,15 @@ public class TestMineURL {
         linkURL.setReferralURL("http://www.boleromagazin.ch/");
         linkURL.setRawURL("http://www.boleromagazin.ch/auf-dem-nachttisch-von-sabina/");
 
-            try {
-                String json = mapper.writeValueAsString(linkURL);
-                producer.send(new ProducerRecord<String, String>("raw-urls", linkURL.getUrl(), json));
+        try {
+            String json = mapper.writeValueAsString(linkURL);
+            producer.send(new ProducerRecord<String, String>("raw-urls", linkURL.getUrl(), json));
 
-            } catch (Exception e) {
+        } catch (Exception e) {
 
-            }
+        }
 
     }
-
-
-
 
 
 }
