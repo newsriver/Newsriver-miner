@@ -21,7 +21,7 @@ public class MinerMain extends MainWithPoolExecutorOptions {
     private static final int DEFAUTL_PORT = 9097;
     private static final Logger logger = LogManager.getLogger(MinerMain.class);
     private static MetricsLogger metrics;
-    private static int MAX_EXECUTUION_DURATION = 120;
+    private static int MAX_EXECUTION_DURATION = 300; //5 min, required for dynamic websites link extrations
     Stream<BaseURL, HTML> stream;
     Miner miner;
 
@@ -53,7 +53,7 @@ public class MinerMain extends MainWithPoolExecutorOptions {
         miner = new Miner();
 
 
-        stream = Stream.Builder.with("Miner", this.getBatchSize(), this.getPoolSize(), this.getQueueSize(), Duration.ofSeconds(MAX_EXECUTUION_DURATION))
+        stream = Stream.Builder.with("Miner", this.getBatchSize(), this.getPoolSize(), this.getQueueSize(), Duration.ofSeconds(MAX_EXECUTION_DURATION))
                 .from("raw-urls").from("seed-urls")
                 .withClasses(BaseURL.class, HTML.class)
                 .setProcessor(input -> {
