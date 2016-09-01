@@ -47,7 +47,7 @@ public class TestFetchHTML {
         String url = "http://www.sonntagszeitung.ch/read/sz_19_06_2016/nachrichten/Schweiz-kaempft-gegen-Schlepper-Mafia-67011";
 
 
-        HTML html = new HTMLFetcher(url, null, true).fetch();
+        HTML html = new HTMLFetcher(url, null, true, false).fetch();
         assertNotNull(html);
 
     }
