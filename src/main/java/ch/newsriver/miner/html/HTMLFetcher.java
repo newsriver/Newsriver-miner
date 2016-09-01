@@ -44,12 +44,14 @@ public class HTMLFetcher {
     private BaseURL referral;
     private String resolvedURL;
     private boolean ajaxBased;
+    private boolean extractDynamicLinks;
 
 
-    public HTMLFetcher(String resolvedURL, BaseURL referral, boolean ajaxBased) {
+    public HTMLFetcher(String resolvedURL, BaseURL referral, boolean ajaxBased, boolean extractDynamicLinks) {
         this.referral = referral;
         this.resolvedURL = resolvedURL;
         this.ajaxBased = ajaxBased;
+        this.extractDynamicLinks = extractDynamicLinks;
     }
 
 
@@ -58,7 +60,7 @@ public class HTMLFetcher {
 
             HTML html;
             if (ajaxBased) {
-                html = HTMLUtils.getAjaxBasedHTML(this.resolvedURL);
+                html = HTMLUtils.getAjaxBasedHTML(this.resolvedURL, extractDynamicLinks);
             } else {
                 html = HTMLUtils.getHTML(this.resolvedURL, false);
             }

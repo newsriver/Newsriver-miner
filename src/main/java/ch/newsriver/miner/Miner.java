@@ -2,35 +2,16 @@ package ch.newsriver.miner;
 
 import ch.newsriver.data.html.HTML;
 import ch.newsriver.data.url.BaseURL;
-import ch.newsriver.data.url.ManualURL;
 import ch.newsriver.data.url.SeedURL;
-import ch.newsriver.executable.Main;
 import ch.newsriver.miner.cache.DownloadedHTMLs;
 import ch.newsriver.miner.html.HTMLFetcher;
-import ch.newsriver.performance.MetricsLogger;
-import ch.newsriver.processor.Output;
-import ch.newsriver.processor.Processor;
 import ch.newsriver.util.http.HttpClientPool;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.time.Duration;
-import java.util.Arrays;
-import java.util.Properties;
 
 /**
  * Created by eliapalme on 11/03/16.
@@ -40,7 +21,7 @@ public class Miner {
     private static final Logger logger = LogManager.getLogger(Miner.class);
 
 
-    public Miner(){
+    public Miner() {
 
 
         try {
@@ -63,26 +44,25 @@ public class Miner {
     }
 
 
-
     public HTML process(BaseURL referral) {
 
         boolean isSeed = referral instanceof SeedURL;
-        boolean reuiresAjaxCrawling = false;
-
+        boolean requiresAjaxCrawling = false;
+        boolean extractDynamicLinks = isSeed; //if the source is a SeedURL we will extract the dynamic links from it
 
         //TODO: replace this with proper solution
         //Like search for the website in elasticsearch and detecting if ajax is needed.
-        if(referral.getUrl().contains("sonntagszeitung.ch")){
-            reuiresAjaxCrawling=true;
+        if (referral.getUrl().contains("sonntagszeitung.ch")) {
+            requiresAjaxCrawling = true;
         }
-        if(referral.getUrl().contains("swissquote.ch")){
-            reuiresAjaxCrawling=true;
+        if (referral.getUrl().contains("swissquote.ch")) {
+            requiresAjaxCrawling = true;
         }
-        if(referral.getUrl().contains("aufeminin.com")){
-            reuiresAjaxCrawling=true;
+        if (referral.getUrl().contains("aufeminin.com")) {
+            requiresAjaxCrawling = true;
         }
-        if(referral.getUrl().contains("boleromagazin.ch")){
-            reuiresAjaxCrawling=true;
+        if (referral.getUrl().contains("boleromagazin.ch")) {
+            requiresAjaxCrawling = true;
         }
 
 
@@ -102,7 +82,7 @@ public class Miner {
         */
 
         if (!DownloadedHTMLs.getInstance().isDownloaded(referral.getUrl()) || isSeed) {
-            HTML html = new HTMLFetcher(referral.getUrl(), referral, reuiresAjaxCrawling).fetch();
+            HTML html = new HTMLFetcher(referral.getUrl(), referral, requiresAjaxCrawling, extractDynamicLinks).fetch();
             if (html != null) {
                 DownloadedHTMLs.getInstance().setDownloaded(referral.getUrl());
                 return html;
@@ -112,7 +92,7 @@ public class Miner {
             html.setAlreadyFetched(true);
             html.setReferral(referral);
             html.setUrl(referral.getUrl());
-           return html;
+            return html;
         }
         return null;
     }
