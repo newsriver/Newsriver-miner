@@ -16,8 +16,10 @@ import com.optimaize.langdetect.text.TextObjectFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
+import org.openqa.selenium.remote.UnreachableBrowserException;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.List;
 
 
@@ -82,10 +84,14 @@ public class HTMLFetcher {
 
 
             return html;
+        } catch (UnknownHostException e) {
+            logger.error("Error running HTMLFetcher task, unknown host", e);
+        } catch (UnreachableBrowserException e) {
+            logger.error("Error running HTMLFetcher task, selenium unreachable", e);
         } catch (IOException e) {
-            logger.error("Error running HTMLFetcher task, url:" + this.resolvedURL, e);
+            logger.error("Error running HTMLFetcher task", e);
         } catch (Exception e) {
-            logger.error("Error running HTMLFetcher task, url:" + this.resolvedURL, e);
+            logger.error("Error running HTMLFetcher task", e);
         }
         return null;
     }
