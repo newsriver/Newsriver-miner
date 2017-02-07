@@ -2,7 +2,7 @@
   "id": "/newsriver/newsriver-miner",
   "cmd": null,
   "cpus": 0.5,
-  "mem": 768,
+  "mem": 2048,
   "disk": 0,
   "instances": 3,
   "container": {
@@ -33,6 +33,9 @@
     "--batch=50",
     "--queue=100"
   ],
+  "env": {
+    "JAVA_OPTS": "-Xms512m -Xmx1536m -Xss1m -XX:MaxMetaspaceSize=512m -Duser.timezone=GMT -Dfile.encoding=utf-8 -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70 -XX:OnOutOfMemoryError='kill -9 %p'"
+  },
   "acceptedResourceRoles": [
     "slave_public"
   ]
