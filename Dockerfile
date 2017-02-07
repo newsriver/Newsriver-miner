@@ -16,18 +16,20 @@
 
 # ENV DISPLAY=:10
 
-#RUN echo -e "#!/bin/bash\n\
-# /usr/bin/Xvfb \$DISPLAY -screen 0 1366x768x24 -ac&\n\
-# java -Duser.timezone=GMT -Dfile.encoding=utf-8 -Dwebdriver.chrome.driver=./chromedriver -Duser.timezone=GMT -Dfile.encoding=utf-8 -Xms512m -Xmx1g -Xss1m -XX:MaxMetaspaceSize=512m -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70 -XX:OnOutOfMemoryError=\"kill -9 %p\" -jar /home/newsriver-miner.jar \"\$@\"" > /home/start.sh
-#RUN chmod +x /home/start.sh
-#ENTRYPOINT ["./start.sh"]
 
 FROM openjdk:8-jre-alpine
 COPY newsriver-miner-*.jar /home/newsriver-miner.jar
 WORKDIR /home
 EXPOSE 31000-32000
 ENV PORT 31112
-ENV JAVA_OPTS="-Xms512m -Xmx1024m -Xss1m -XX:MaxMetaspaceSize=512m -Duser.timezone=GMT -Dfile.encoding=utf-8 -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70 -XX:OnOutOfMemoryError='kill -9 %p'"
-ENTRYPOINT ["/bin/sh", "-c", "java","${JAVA_OPTS}","-Duser.timezone=GMT","-Dfile.encoding=utf-8","-Xms256m","-Xmx512m","-Xss1m","-XX:MaxMetaspaceSize=128m","-XX:+UseConcMarkSweepGC","-XX:+CMSParallelRemarkEnabled","-XX:+UseCMSInitiatingOccupancyOnly","-XX:CMSInitiatingOccupancyFraction=70","-XX:OnOutOfMemoryError='kill -9 %p'","-jar","/home/newsriver-miner.jar"]
-#ENTRYPOINT exec java $JAVA_OPTS -jar /home/newsriver-miner.jar
+ENV JAVA_OPTS="-Xms512m -Xmx1024m -Xss1m -XX:MaxMetaspaceSize=512m -Duser.timezone=GMT -Dfile.encoding=utf-8 -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70 -XX:+ExitOnOutOfMemoryError"
+#ENTRYPOINT ["java","-Duser.timezone=GMT","-Dfile.encoding=utf-8","-Xms256m","-Xmx512m","-Xss1m","-XX:MaxMetaspaceSize=128m","-XX:+UseConcMarkSweepGC","-XX:+CMSParallelRemarkEnabled","-XX:+UseCMSInitiatingOccupancyOnly","-XX:CMSInitiatingOccupancyFraction=70","-XX:OnOutOfMemoryError='kill -9 %p'","-jar","/home/newsriver-miner.jar"]
+
+RUN echo -e "#!/bin/sh\n\
+            java \$JAVA_OPTS -jar /home/newsriver-miner.jar \"\$@\"" > /home/start.sh
+RUN chmod +x /home/start.sh
+ENTRYPOINT ["./start.sh"]
+
+
+#CMD exec java $JAVA_OPTS -jar /home/newsriver-miner.jar
 #CMD []
