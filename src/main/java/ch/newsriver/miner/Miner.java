@@ -67,6 +67,7 @@ public class Miner {
 
 
         /*TODO: need to be completed we may need to add a Redis layer to the WebSiteFactory
+        //Also the extractDynamicLinks flag should be set tat the publisher level
                             URI pageURL = null;
                             try {
                                 pageURL = new URI(referral.getUlr());
