@@ -82,7 +82,7 @@ public class Miner {
                             }
         */
 
-        if (!DownloadedHTMLs.getInstance().isDownloaded(referral.getUrl()) || isSeed) {
+        if (isSeed || !DownloadedHTMLs.getInstance().isDownloaded(referral.getUrl())) {
             HTML html = new HTMLFetcher(referral.getUrl(), referral, requiresAjaxCrawling, extractDynamicLinks).fetch();
             if (html != null) {
                 DownloadedHTMLs.getInstance().setDownloaded(referral.getUrl());
